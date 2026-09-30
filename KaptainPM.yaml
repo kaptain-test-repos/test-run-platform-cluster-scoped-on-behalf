@@ -1,0 +1,68 @@
+apiVersion: kaptain.org/1.2
+kind: kubernetes-run-platform-meta-environment
+spec:
+  global:
+    projectName:
+      stripRepositoryNamePrefix: test
+  contents:
+    # Both children delegate their cluster-scoped resources upward
+    # (clusterScopedDelegation: parent, namespace-only roles). The RP build
+    # aggregates each child's on-behalf dir into its own image, kept
+    # separate/distinct from the RP's image-run manifests, dedup-identical
+    # and error-on-conflict. At deploy each is applied with field ownership
+    # as if the env did it itself - just done on behalf - so moving an env
+    # between permission models causes no ownership breakage.
+    - run-env-deployment-keel-namespace-only:[1.0,2.0)
+    - run-env-job-keelson-namespace-only:[1.0,2.0)
+  main:
+    environment:
+      deployMode: deployment
+      imageAutoUpdateProvider: keelson
+      generateIdealEnvironmentDeployManifests: true
+      checksumSecretsTiming: build
+      failOnUnreferencedConfigOrSecrets: true
+      environmentDeployBaseImage:
+        registry: ghcr.io
+        namespace: kube-kaptain
+        family: trixie-slim
+        version: 1.0.13.1.34.1
+      # Coverage: the enforcing end. Master and undeclared-namespace both
+      # enabled, block default enabled with one entry pulled BACK to dryrun
+      # (the opposite override direction to the additional-namespaces
+      # fixture), and accumulating types none / all / age.
+      cleanUp:
+        policy: enabled
+        additionalResources:
+          # Was expectedUndeclaredResources; flat matcher now.
+          - kind: ClusterRole
+            name: 'system:*'
+        accumulatingResources:
+          jobs:
+            type: none
+          configmaps:
+            type: all
+          secrets:
+            type: age
+            age: 90d
+
+        undeclaredNamespacePolicy: enabled
+
+        additionalNamespaces:
+          defaultPolicy: enabled
+          namespaces:
+            - name: kube-system
+              policy: dryrun
+              allowedResources:
+                - kind: Service
+                  name: kube-dns
+            - name: default
+              deniedResources: []
+    hooks:
+      preBuild: test-hooks/pre-build.bash
+      preTaggingTests: test-hooks/pre-tagging-tests.bash
+      postVersionsAndNaming: test-hooks/post-versions-and-naming.bash
+      preDockerPrepare: test-hooks/pre-docker-prepare.bash
+      postDockerTests: test-hooks/post-docker-tests.bash
+      prePackagePrepare: test-hooks/pre-package-prepare.bash
+      postPackageTests: test-hooks/post-package-tests.bash
+      postBuild: test-hooks/post-build.bash
