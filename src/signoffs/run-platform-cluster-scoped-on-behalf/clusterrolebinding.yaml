@@ -1,0 +1,4 @@
+sourcePath: run-platform-cluster-scoped-on-behalf/clusterrolebinding.yaml
+checksum: sha256:e4e5ec33f72f9d8c2dd011f03318ad8bc7cca1a2a9ff32ea41154e54d7c40b7e
+reviewer: "Fred Cooke"
+signoffTimestamp: 2026-09-29T09:54:34Z
