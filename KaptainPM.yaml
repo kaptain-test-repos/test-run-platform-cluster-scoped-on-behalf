@@ -12,8 +12,8 @@ spec:
     # and error-on-conflict. At deploy each is applied with field ownership
     # as if the env did it itself - just done on behalf - so moving an env
     # between permission models causes no ownership breakage.
-    - run-env-deployment-keel-namespace-only:[1.0,2.0)
-    - run-env-job-keelson-namespace-only:[1.0,2.0)
+    - run-env-deployment-keel-namespace-only:[1.0.3,2.0)
+    - run-env-job-keelson-namespace-only:[1.0.3,2.0)
   main:
     environment:
       deployMode: deployment
