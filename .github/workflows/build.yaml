@@ -8,7 +8,7 @@ on:
 
 jobs:
   build:
-    uses: kube-kaptain/buildon-github-actions/.github/workflows/kubernetes-run-platform-meta-environment.yaml@environment-and-rp-builds
+    uses: kube-kaptain/buildon-github-actions/.github/workflows/kubernetes-run-platform-meta-environment.yaml@minor-env-build-fixes
     permissions:
       contents: write
       packages: write
